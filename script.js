@@ -125,18 +125,8 @@ function startTimer() {
     updateTimeLeftTextContent();
     if (timeLeft === 0) {
       clearInterval(timerInterval);
-      if (currentInterval === 'pomodoro') {
-        timeLeft = breakTime;
-        currentInterval = 'short-break';
-        startTimer();
-      } else if (currentInterval === 'short-break') {
-        timeLeft = longBreakTime;
-        currentInterval = 'long-break';
-        startTimer();
-      } else {
-        timeLeft = focusTime;
-        currentInterval = 'pomodoro';
-      }
+      ringBell();
+      startStopBtn.textContent = 'Start';
     }
   }, 1000);
 }
@@ -152,6 +142,12 @@ function updateTimeLeftTextContent() {
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
   timeLeftEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
+// Function to ring a bell when the timer is over
+function ringBell() {
+  const bell = new Audio('school_bell.mp3');
+  bell.play();
 }
 
 // Function to apply the user's saved preferences
