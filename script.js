@@ -1,3 +1,9 @@
+// Clear localStorage and sessionStorage on page reload
+window.addEventListener('beforeunload', () => {
+  localStorage.clear();
+  sessionStorage.clear();
+});
+
 // Global variables
 let timeLeft = 38 * 60; // seconds
 let timerInterval;
@@ -189,6 +195,18 @@ function applyUserPreferences() {
     button.style.backgroundColor = backgroundColor;
     button.style.borderColor = fontColor;
   });
+
+  // Update the timeLeft variable based on the current interval
+  if (currentInterval === 'pomodoro') {
+    timeLeft = focusTime;
+  } else if (currentInterval === 'short-break') {
+    timeLeft = breakTime;
+  } else {
+    timeLeft = longBreakTime;
+  }
+
+  // Update the time left text content
+  updateTimeLeftTextContent();
 }
 
 // Apply user preferences on page load
