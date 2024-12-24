@@ -85,9 +85,9 @@ body {
 }
 
 .modal-content {
-  width:300px;
-  font-family:Rubik;
-  color:black;
+  width: 300px;
+  font-family: Rubik;
+  color: black;
   align-items: center;
   justify-content: center;
   background-color: #f7f6f3;
@@ -105,31 +105,31 @@ body {
 }
 
 .setting-option {
- 
-  align-item:center;
+
+  align-items: center;
   font-family: Rubik;
   margin-bottom: 10px;
 }
 
 .setting-wrapper {
-  text-align:center;
-  flex-direction:column;
-  display:flex;
-  align-item:center;
+  text-align: center;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
 }
 
 
 .setting-option label {
-  text-align:center;
-  align-item:center;
+  text-align: center;
+  align-items: center;
   font-family: Rubik;
   margin-right: 10px;
 }
 
 #save-btn {
-  margin-top:10px;
-  width:60%;
-  font-family:Rubik;
+  margin-top: 10px;
+  width: 60%;
+  font-family: Rubik;
   background-color: black;
   color: #fff;
   border: none;
@@ -137,25 +137,23 @@ body {
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-  
+
 }
 
 
 #save-btn:hover {
   background-color: grey;
-  color:white;
-  width:60
+  color: white;
+  width: 60
 }
 
-#option{
-  font-family:Rubik;
-  
+#option {
+  font-family: Rubik;
+
 }
 
 select {
-  // A reset of styles, including removing the default dropdown arrow
   appearance: none;
-  // Additional resets for further consistency
   background-color: transparent;
   border: none;
   padding: 0 1em 0 0;
@@ -165,4 +163,12 @@ select {
   font-size: inherit;
   cursor: inherit;
   line-height: inherit;
+}
+
+.setting-option input {
+  width: 60%;
+  padding: 5px;
+  margin-top: 5px;
+  font-family: Rubik, sans-serif;
+  font-size: 1rem;
 }

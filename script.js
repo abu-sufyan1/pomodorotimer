@@ -4,6 +4,9 @@ let timerInterval;
 let currentInterval = 'pomodoro';
 let backgroundColor = '#F1F1EF'; // Default background color
 let fontColor = '#37352F'; // Default font color
+let focusTime = 38 * 60; // Default focus time in seconds
+let breakTime = 22 * 60; // Default break time in seconds
+let longBreakTime = 30 * 60; // Default long break time in seconds
 
 // DOM elements
 const timeLeftEl = document.getElementById('time-left');
@@ -18,23 +21,26 @@ const closeModalBtn = document.querySelector('.close-btn');
 const backgroundColorSelect = document.getElementById('background-color');
 const fontColorSelect = document.getElementById('font-color');
 const saveBtn = document.getElementById('save-btn');
+const focusTimeInput = document.getElementById('focus-time');
+const breakTimeInput = document.getElementById('break-time');
+const longBreakTimeInput = document.getElementById('long-break-time');
 
 // Event listeners for interval buttons
 pomodoroIntervalBtn.addEventListener('click', () => {
   currentInterval = 'pomodoro';
-  timeLeft = 38 * 60;
+  timeLeft = focusTime;
   updateTimeLeftTextContent();
 });
 
 shortBreakIntervalBtn.addEventListener('click', () => {
   currentInterval = 'short-break';
-  timeLeft = 22 * 60;
+  timeLeft = breakTime;
   updateTimeLeftTextContent();
 });
 
 longBreakIntervalBtn.addEventListener('click', () => {
   currentInterval = 'long-break';
-  timeLeft = 30 * 60;
+  timeLeft = longBreakTime;
   updateTimeLeftTextContent();
 });
 
@@ -52,11 +58,11 @@ startStopBtn.addEventListener('click', () => {
 resetBtn.addEventListener('click', () => {
   stopTimer();
   if (currentInterval === 'pomodoro') {
-    timeLeft = 38 * 60;
+    timeLeft = focusTime;
   } else if (currentInterval === 'short-break') {
-    timeLeft = 22 * 60;
+    timeLeft = breakTime;
   } else {
-    timeLeft = 30 * 60;
+    timeLeft = longBreakTime;
   }
   updateTimeLeftTextContent();
   startStopBtn.textContent = 'Start';
@@ -76,13 +82,31 @@ closeModalBtn.addEventListener('click', () => {
 saveBtn.addEventListener('click', () => {
   const newBackgroundColor = backgroundColorSelect.value;
   const newFontColor = fontColorSelect.value;
+  focusTime = parseInt(focusTimeInput.value) * 60;
+  breakTime = parseInt(breakTimeInput.value) * 60;
+  longBreakTime = parseInt(longBreakTimeInput.value) * 60;
 
   // Save preferences to localStorage
   localStorage.setItem('backgroundColor', newBackgroundColor);
   localStorage.setItem('fontColor', newFontColor);
+  localStorage.setItem('focusTime', focusTime);
+  localStorage.setItem('breakTime', breakTime);
+  localStorage.setItem('longBreakTime', longBreakTime);
 
   // Apply the new saved preferences
   applyUserPreferences();
+
+  // Update the timeLeft variable based on the current interval
+  if (currentInterval === 'pomodoro') {
+    timeLeft = focusTime;
+  } else if (currentInterval === 'short-break') {
+    timeLeft = breakTime;
+  } else {
+    timeLeft = longBreakTime;
+  }
+
+  // Update the time left text content
+  updateTimeLeftTextContent();
 
   // Close the modal after saving preferences
   settingsModal.style.display = 'none';
@@ -96,15 +120,15 @@ function startTimer() {
     if (timeLeft === 0) {
       clearInterval(timerInterval);
       if (currentInterval === 'pomodoro') {
-        timeLeft = 22 * 60;
+        timeLeft = breakTime;
         currentInterval = 'short-break';
         startTimer();
       } else if (currentInterval === 'short-break') {
-        timeLeft = 30 * 60;
+        timeLeft = longBreakTime;
         currentInterval = 'long-break';
         startTimer();
       } else {
-        timeLeft = 37 * 60;
+        timeLeft = focusTime;
         currentInterval = 'pomodoro';
       }
     }
@@ -129,6 +153,9 @@ function applyUserPreferences() {
   // Retrieve user preferences from localStorage
   const savedBackgroundColor = localStorage.getItem('backgroundColor');
   const savedFontColor = localStorage.getItem('fontColor');
+  const savedFocusTime = localStorage.getItem('focusTime');
+  const savedBreakTime = localStorage.getItem('breakTime');
+  const savedLongBreakTime = localStorage.getItem('longBreakTime');
 
   // Apply the preferences if they exist in localStorage
   if (savedBackgroundColor) {
@@ -137,6 +164,18 @@ function applyUserPreferences() {
 
   if (savedFontColor) {
     fontColor = savedFontColor;
+  }
+
+  if (savedFocusTime) {
+    focusTime = parseInt(savedFocusTime);
+  }
+
+  if (savedBreakTime) {
+    breakTime = parseInt(savedBreakTime);
+  }
+
+  if (savedLongBreakTime) {
+    longBreakTime = parseInt(savedLongBreakTime);
   }
 
   // Apply the preferences to the Pomodoro Timer widget
