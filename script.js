@@ -1,8 +1,8 @@
 // Clear localStorage and sessionStorage on page reload
-window.addEventListener('beforeunload', () => {
-  localStorage.clear();
-  sessionStorage.clear();
-});
+// window.addEventListener('beforeunload', () => {
+//  localStorage.clear();
+//  sessionStorage.clear();
+// });
 
 // Global variables
 let timeLeft = 38 * 60; // seconds
