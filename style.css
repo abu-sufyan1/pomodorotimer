@@ -172,3 +172,8 @@ select {
   font-family: Rubik, sans-serif;
   font-size: 1rem;
 }
+
+.selected-interval-button {
+  background-color: #37352F !important;
+  color: #F1F1EF !important;
+}

@@ -33,18 +33,42 @@ const longBreakTimeInput = document.getElementById('long-break-time');
 
 // Event listeners for interval buttons
 pomodoroIntervalBtn.addEventListener('click', () => {
+  stopTimer();
   currentInterval = 'pomodoro';
   timeLeft = focusTime;
+  if (shortBreakIntervalBtn.classList.contains('selected-interval-button')) {
+    shortBreakIntervalBtn.classList.remove('selected-interval-button');
+  }
+  if (longBreakIntervalBtn.classList.contains('selected-interval-button')) {
+    longBreakIntervalBtn.classList.remove('selected-interval-button');
+  }
+  pomodoroIntervalBtn.classList.add('selected-interval-button');
   updateTimeLeftTextContent();
 });
 
 shortBreakIntervalBtn.addEventListener('click', () => {
+  stopTimer();
+  if (pomodoroIntervalBtn.classList.contains('selected-interval-button')) {
+    pomodoroIntervalBtn.classList.remove('selected-interval-button');
+  }
+  if (longBreakIntervalBtn.classList.contains('selected-interval-button')) {
+    longBreakIntervalBtn.classList.remove('selected-interval-button');
+  }
+  shortBreakIntervalBtn.classList.add('selected-interval-button');
   currentInterval = 'short-break';
   timeLeft = breakTime;
   updateTimeLeftTextContent();
 });
 
 longBreakIntervalBtn.addEventListener('click', () => {
+  stopTimer();
+  if (pomodoroIntervalBtn.classList.contains('selected-interval-button')) {
+    pomodoroIntervalBtn.classList.remove('selected-interval-button');
+  }
+  if (shortBreakIntervalBtn.classList.contains('selected-interval-button')) {
+    shortBreakIntervalBtn.classList.remove('selected-interval-button');
+  }
+  longBreakIntervalBtn.classList.add('selected-interval-button');
   currentInterval = 'long-break';
   timeLeft = longBreakTime;
   updateTimeLeftTextContent();
@@ -120,13 +144,28 @@ saveBtn.addEventListener('click', () => {
 
 // Function to start the timer
 function startTimer() {
+  const startTime = new Date().getTime();
+  localStorage.setItem('startTime', startTime);
+  localStorage.setItem('currentInterval', currentInterval);
+
+  runTimerInterval(startTime);
+}
+
+// Function to run the timer interval
+function runTimerInterval(startTime) {
   timerInterval = setInterval(() => {
-    timeLeft--;
+    const currentTime = new Date().getTime();
+    const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+    timeLeft = getTimeLeft(elapsedTime);
+
     updateTimeLeftTextContent();
-    if (timeLeft === 0) {
+
+    if (timeLeft <= 0) {
       clearInterval(timerInterval);
       ringBell();
       startStopBtn.textContent = 'Start';
+      switchInterval();
+      startTimer();
     }
   }, 1000);
 }
@@ -150,6 +189,31 @@ function ringBell() {
   bell.play();
 }
 
+// Function to switch to the next interval
+function switchInterval() {
+  if (currentInterval === 'pomodoro') {
+    timeLeft = breakTime;
+    currentInterval = 'short-break';
+  } else if (currentInterval === 'short-break') {
+    timeLeft = longBreakTime;
+    currentInterval = 'long-break';
+  } else {
+    timeLeft = focusTime;
+    currentInterval = 'pomodoro';
+  }
+}
+
+// Function to get the remaining time based on elapsed time
+function getTimeLeft(elapsedTime) {
+  if (currentInterval === 'pomodoro') {
+    return focusTime - elapsedTime;
+  } else if (currentInterval === 'short-break') {
+    return breakTime - elapsedTime;
+  } else {
+    return longBreakTime - elapsedTime;
+  }
+}
+
 // Function to apply the user's saved preferences
 function applyUserPreferences() {
   // Retrieve user preferences from localStorage
@@ -158,6 +222,8 @@ function applyUserPreferences() {
   const savedFocusTime = localStorage.getItem('focusTime');
   const savedBreakTime = localStorage.getItem('breakTime');
   const savedLongBreakTime = localStorage.getItem('longBreakTime');
+  const savedStartTime = localStorage.getItem('startTime');
+  const savedCurrentInterval = localStorage.getItem('currentInterval');
 
   // Apply the preferences if they exist in localStorage
   if (savedBackgroundColor) {
@@ -180,6 +246,20 @@ function applyUserPreferences() {
     longBreakTime = parseInt(savedLongBreakTime);
   }
 
+  if (savedCurrentInterval) {
+    currentInterval = savedCurrentInterval;
+    if (currentInterval == 'pomodoro') {
+      pomodoroIntervalBtn.classList.add('selected-interval-button');
+    } else if (currentInterval == 'short-break') {  
+      shortBreakIntervalBtn.classList.add('selected-interval-button');
+    } else {
+      longBreakIntervalBtn.classList.add('selected-interval-button');
+    }
+  }
+  else {
+    pomodoroIntervalBtn.classList.add('selected-interval-button');
+  }
+
   // Apply the preferences to the Pomodoro Timer widget
   document.body.style.backgroundColor = backgroundColor;
   document.body.style.color = fontColor;
@@ -192,13 +272,20 @@ function applyUserPreferences() {
     button.style.borderColor = fontColor;
   });
 
-  // Update the timeLeft variable based on the current interval
-  if (currentInterval === 'pomodoro') {
-    timeLeft = focusTime;
-  } else if (currentInterval === 'short-break') {
-    timeLeft = breakTime;
-  } else {
-    timeLeft = longBreakTime;
+  // Calculate the remaining time based on the saved start time
+  if (savedStartTime) {
+    const currentTime = new Date().getTime();
+    const elapsedTime = Math.floor((currentTime - savedStartTime) / 1000);
+    timeLeft = getTimeLeft(elapsedTime);
+
+    if (timeLeft <= 0) {
+      ringBell();
+      switchInterval();
+      timeLeft = getTimeLeft(0); // Reset timeLeft for the next interval
+    } else {
+      startStopBtn.textContent = 'Stop';
+      runTimerInterval(savedStartTime); // Restart the timer if there is remaining time
+    }
   }
 
   // Update the time left text content
