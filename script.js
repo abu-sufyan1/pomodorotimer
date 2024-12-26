@@ -122,9 +122,7 @@ saveBtn.addEventListener('click', () => {
   localStorage.setItem('focusTime', focusTime);
   localStorage.setItem('breakTime', breakTime);
   localStorage.setItem('longBreakTime', longBreakTime);
-
-  // Apply the new saved preferences
-  applyUserPreferences();
+  localStorage.removeItem('startTime');
 
   // Update the timeLeft variable based on the current interval
   if (currentInterval === 'pomodoro') {
@@ -165,7 +163,7 @@ function runTimerInterval(startTime) {
       ringBell();
       startStopBtn.textContent = 'Start';
       switchInterval();
-      startTimer();
+      // startTimer();
     }
   }, 1000);
 }
@@ -236,14 +234,17 @@ function applyUserPreferences() {
 
   if (savedFocusTime) {
     focusTime = parseInt(savedFocusTime);
+    timeLeft = focusTime;
   }
 
   if (savedBreakTime) {
     breakTime = parseInt(savedBreakTime);
+    timeLeft = breakTime;
   }
 
   if (savedLongBreakTime) {
     longBreakTime = parseInt(savedLongBreakTime);
+    timeLeft = longBreakTime;
   }
 
   if (savedCurrentInterval) {
@@ -287,7 +288,6 @@ function applyUserPreferences() {
       runTimerInterval(savedStartTime); // Restart the timer if there is remaining time
     }
   }
-
   // Update the time left text content
   updateTimeLeftTextContent();
 }
